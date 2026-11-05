@@ -1,0 +1,381 @@
+:root {
+  --sw: min(96vw, 160vh);
+  --sh: calc(var(--sw) * 0.5625);
+  --neon: #43f6e0;
+  --pink: #ff3d7f;
+  --yellow: #ffd34e;
+  --ink: #07060d;
+  --panel: #141022;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+  color: #fff;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 45%, #1a0d2e 0%, #0b0714 55%, #05040a 100%),
+    #05040a;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 61, 127, 0.028) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(0deg, rgba(67, 246, 224, 0.022) 0 1px, transparent 1px 44px);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent 78%);
+  z-index: 0;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(10px, env(safe-area-inset-top, 0px))
+    max(10px, env(safe-area-inset-right, 0px))
+    max(10px, var(--safe-b))
+    max(10px, env(safe-area-inset-left, 0px));
+  z-index: 1;
+}
+
+#console {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#frame {
+  position: relative;
+  width: var(--sw);
+  height: var(--sh);
+  flex: 0 0 auto;
+  background: #000;
+  border: 2px solid #2a2140;
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px #07060d,
+    0 0 22px rgba(67, 246, 224, 0.12),
+    0 0 70px rgba(255, 61, 127, 0.09),
+    0 18px 50px rgba(0, 0, 0, 0.75);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #07060d;
+}
+
+#crt {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(4, 2, 10, 0.22) 0 1px, rgba(255, 255, 255, 0.012) 1px 3px),
+    radial-gradient(ellipse 78% 70% at 50% 48%, transparent 52%, rgba(2, 1, 8, 0.36) 100%);
+  opacity: 0.8;
+  mix-blend-mode: multiply;
+}
+
+#crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.035) 0 2%, transparent 2% 100%);
+  opacity: 0.7;
+}
+
+#frame-ui {
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top, 0px));
+  right: max(8px, env(safe-area-inset-right, 0px));
+  z-index: 40;
+  display: flex;
+  gap: 5px;
+}
+
+.icon-btn {
+  appearance: none;
+  border: 1px solid #4a3a63;
+  background: rgba(10, 7, 20, 0.74);
+  color: #b9aed0;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  padding: 6px 6px;
+  min-width: 26px;
+  height: 24px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.1s, border-color 0.1s, background 0.1s;
+}
+
+.icon-btn:hover { color: #fff; border-color: var(--neon); }
+.icon-btn:active { transform: translateY(1px); }
+.icon-btn.muted { color: #6b617e; }
+
+body.menu-mode #pauseBtn { visibility: hidden; }
+
+#hint {
+  color: #6f6384;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  line-height: 1.8;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+#hint .sep { color: #392f4b; padding: 0 5px; }
+
+.keycap {
+  display: inline-block;
+  min-width: 15px;
+  padding: 1px 4px;
+  margin: 0 1px;
+  border: 1px solid #3d3152;
+  border-bottom-width: 2px;
+  border-radius: 2px;
+  background: #120e1e;
+  color: #b9aed0;
+  font-size: 9px;
+  text-align: center;
+}
+
+/* ---------- touch deck ---------- */
+
+#deck {
+  display: none;
+  width: 100%;
+  max-width: 620px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  z-index: 20;
+}
+
+body.touch.playing #deck { display: flex; }
+
+.pad {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.pad-left { flex-direction: column; align-items: flex-start; }
+.pad-right { flex-direction: column; align-items: flex-end; }
+
+.steer { display: flex; gap: 8px; }
+.mini-row { display: flex; gap: 6px; }
+
+.tbtn {
+  appearance: none;
+  border: 1px solid #55446f;
+  border-bottom: 3px solid #241a36;
+  background: linear-gradient(180deg, #221a33, #120e1e);
+  color: #ddd5ec;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  width: 58px;
+  height: 52px;
+  border-radius: 7px;
+  cursor: pointer;
+  touch-action: none;
+  padding: 0;
+  transition: transform 0.05s, background 0.08s, color 0.08s;
+}
+
+.tbtn.active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  background: linear-gradient(180deg, #43f6e0, #1aa99a);
+  color: #06110f;
+  border-color: #8ffced;
+}
+
+.tbtn.gas {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  font-size: 15px;
+  color: #071310;
+  border-color: #55e7a8;
+  border-bottom: 4px solid #0c5b41;
+  background: linear-gradient(180deg, #65ffc0, #1ec98a 65%, #0b8e62);
+}
+
+.tbtn.gas.active {
+  background: linear-gradient(180deg, #d8ffe9, #43f6e0);
+  transform: translateY(3px);
+}
+
+.tbtn.drift-btn {
+  width: 124px;
+  height: 42px;
+  color: #ff9ebc;
+  border-color: #8e2e54;
+  background: linear-gradient(180deg, #3a142a, #1d0c18);
+}
+
+.tbtn.drift-btn.active {
+  background: linear-gradient(180deg, #ff7aa8, #ff3d7f);
+  color: #1c0410;
+  border-color: #ffc0d4;
+}
+
+.tbtn.mini {
+  width: 52px;
+  height: 40px;
+  font-size: 10px;
+  color: #bcb1d2;
+}
+
+.tbtn.mini.active {
+  background: linear-gradient(180deg, #ffd34e, #e79a13);
+  color: #221400;
+  border-color: #ffe9a1;
+}
+
+body.mode-drag .pad-left { display: none; }
+body.mode-drag .pad-right { margin-left: auto; }
+body.mode-drag [data-act="brake"] { display: none; }
+body.mode-drift [data-act="shift"] { display: none; }
+
+body.touch:not(.playing) #hint,
+body.touch.playing #hint { display: none; }
+
+/* Portrait: the pad sits in a dedicated deck below the screen. */
+body.touch.portrait.playing #deck {
+  padding: 6px 4px calc(4px + var(--safe-b));
+  background: linear-gradient(180deg, rgba(16, 11, 28, 0), rgba(16, 11, 28, 0.72));
+  border-radius: 10px;
+}
+
+body.touch.portrait.playing .tbtn {
+  width: 62px;
+  height: 58px;
+  font-size: 13px;
+}
+
+body.touch.portrait.playing .tbtn.gas {
+  width: 88px;
+  height: 88px;
+}
+
+body.touch.portrait.playing .tbtn.drift-btn {
+  width: 132px;
+  height: 44px;
+}
+
+body.touch.portrait.playing .tbtn.mini {
+  width: 54px;
+  height: 42px;
+}
+
+/* Landscape: controls float over the lower corners of the screen. */
+body.touch.landscape.playing #deck {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(8px + var(--safe-b));
+  width: 100%;
+  max-width: none;
+  padding: 0 max(14px, env(safe-area-inset-right, 0px)) 0 max(14px, env(safe-area-inset-left, 0px));
+  pointer-events: none;
+}
+
+body.touch.landscape.playing .tbtn {
+  pointer-events: auto;
+  opacity: 0.82;
+}
+
+body.touch.landscape.playing .tbtn.gas {
+  width: 74px;
+  height: 74px;
+}
+
+body.touch.landscape.playing .tbtn {
+  width: 54px;
+  height: 48px;
+}
+
+body.touch.landscape.playing .tbtn.drift-btn {
+  width: 112px;
+  height: 38px;
+}
+
+body.touch.landscape.playing .tbtn.mini {
+  width: 50px;
+  height: 36px;
+}
+
+/* On very short landscape phones, tighten the frame border. */
+@media (max-height: 430px) {
+  #hint { display: none; }
+  #console { gap: 6px; }
+  #frame { border-width: 1px; }
+}
+
+#startBtn {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 2px;
+  opacity: 0.01;
+  border: 0;
+  padding: 0;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+#landscapeToast {
+  display: none;
+  position: fixed;
+  bottom: calc(6px + var(--safe-b));
+  left: 50%;
+  transform: translateX(-50%);
+  color: #6f6384;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+body.touch.portrait.playing #landscapeToast { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn, .tbtn { transition: none; }
+}

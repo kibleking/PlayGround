@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#07060d" />
+  <meta name="description" content="NEON APEX - a retro pixel art drag racing and drifting game." />
+  <title>NEON APEX — Drag &amp; Drift</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="console">
+      <div id="frame">
+        <canvas id="game" width="384" height="216" aria-label="Neon Apex game screen"></canvas>
+        <div id="crt" aria-hidden="true"></div>
+        <div id="frame-ui">
+          <button id="pauseBtn" class="icon-btn" type="button" aria-label="Pause" title="Pause (P)">II</button>
+          <button id="muteBtn" class="icon-btn" type="button" aria-label="Toggle sound" title="Sound (M)">SND</button>
+        </div>
+        <div id="touchLayer" aria-hidden="true"></div>
+        <div id="rotateNote">↻ TURN YOUR DEVICE FOR A WIDER TRACK</div>
+      </div>
+
+      <div id="deck" aria-label="Touch controls">
+        <div class="pad pad-left">
+          <button class="tbtn drift-btn" data-act="drift" type="button" aria-label="Handbrake / drift">DRIFT</button>
+          <div class="steer">
+            <button class="tbtn" data-act="left" type="button" aria-label="Steer left">◀</button>
+            <button class="tbtn" data-act="right" type="button" aria-label="Steer right">▶</button>
+          </div>
+        </div>
+        <div class="pad pad-right">
+          <div class="mini-row">
+            <button class="tbtn mini" data-act="nitro" type="button" aria-label="Nitrous">NOS</button>
+            <button class="tbtn mini" data-act="shift" type="button" aria-label="Shift gear">SHIFT</button>
+            <button class="tbtn mini" data-act="brake" type="button" aria-label="Brake">BRAKE</button>
+          </div>
+          <button class="tbtn gas" data-act="throttle" type="button" aria-label="Throttle">GAS</button>
+        </div>
+      </div>
+
+      <div id="hint" aria-hidden="true">
+        <span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span> drive
+        <span class="sep">/</span>
+        <span class="keycap">SPACE</span> drift &amp; shift
+        <span class="sep">/</span>
+        <span class="keycap">N</span> nitro
+        <span class="sep">/</span>
+        <span class="keycap">P</span> pause
+        <span class="sep">/</span>
+        <span class="keycap">M</span> sound
+      </div>
+    </div>
+  </div>
+
+  <button id="startBtn" aria-label="Start" type="button">Start</button>
+  <div id="landscapeToast">↻ ROTATE FOR A BIGGER VIEW</div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
