@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#06090f" />
+  <meta name="description" content="PulseTrade AI — an AI market intelligence desk that scans institutional finance news, ranks risk-adjusted trade ideas, and builds complete trade plans." />
+  <title>PulseTrade AI — Market Intelligence Desk</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230b1220'/%3E%3Cpath d='M5 19h5l3-8 4 14 3-8h7' fill='none' stroke='%2334e5ad' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient-orb orb-a"></div>
+    <div class="ambient-orb orb-b"></div>
+    <div class="ambient-grid"></div>
+  </div>
+
+  <header class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <button class="brand" data-action="switch-view" data-view="dashboard" aria-label="PulseTrade AI home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none">
+            <path d="M7 24h6l3.5-9 5 16 4-10.5H34" stroke="url(#brandGrad)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="brandGrad" x1="7" y1="16" x2="34" y2="24" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#34e5ad"/><stop offset="1" stop-color="#62a8ff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand-copy">
+          <span class="brand-name">PulseTrade<span>AI</span></span>
+          <span class="brand-sub">Market intelligence</span>
+        </span>
+      </button>
+
+      <nav class="main-nav" aria-label="Primary">
+        <button class="nav-item active" data-action="switch-view" data-view="dashboard">Dashboard</button>
+        <button class="nav-item" data-action="switch-view" data-view="signals">AI Signals <span class="nav-badge" id="navSignalCount">14</span></button>
+        <button class="nav-item" data-action="switch-view" data-view="news">News Desk</button>
+        <button class="nav-item" data-action="switch-view" data-view="portfolio">Portfolio</button>
+      </nav>
+
+      <div class="topbar-actions">
+        <div class="search-wrap" id="searchWrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.2 4.2" stroke-linecap="round"/></svg>
+          <input id="globalSearch" class="global-search" type="text" placeholder="Search tickers, news…" autocomplete="off" aria-label="Search tickers and news" />
+          <kbd class="search-kbd">/</kbd>
+          <div class="search-results" id="searchResults" hidden></div>
+        </div>
+        <div class="market-status" id="marketStatus" title="US market session">
+          <span class="status-dot"></span>
+          <span class="status-copy"><span class="status-label">US market</span><span class="status-value">Checking…</span></span>
+        </div>
+        <button class="btn btn-primary btn-scan" data-action="run-scan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2"/></svg>
+          <span>Run AI scan</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="ticker" aria-label="Market ticker">
+    <div class="ticker-label"><span class="live-dot"></span> LIVE</div>
+    <div class="ticker-viewport"><div class="ticker-track" id="tickerTrack"></div></div>
+    <div class="ticker-time" id="tickerTime">—</div>
+  </div>
+
+  <main class="page" id="main">
+    <section class="view active" id="view-dashboard" aria-label="Dashboard">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> Thursday, November 5 · Pre-market intelligence</div>
+          <h1>Your AI trading desk<span class="head-accent">.</span></h1>
+          <p>Institutional news, price action and risk models — distilled into trades you can actually execute.</p>
+        </div>
+        <div class="head-meta">
+          <div class="head-meta-item"><span class="meta-label">Last scan</span><strong id="lastScanLabel">7 min ago</strong></div>
+          <div class="head-meta-divider"></div>
+          <div class="head-meta-item"><span class="meta-label">Model</span><strong>Pulse-4 Ensemble</strong></div>
+          <button class="icon-btn" data-action="run-scan" aria-label="Refresh AI scan" title="Refresh AI scan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <article class="panel hero-card" id="heroCard"></article>
+        <aside class="panel scan-card" id="scanCard"></aside>
+        <div class="market-strip" id="marketStrip"></div>
+
+        <section class="panel ideas-panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">AI trade ideas <span class="count-pill" id="ideaCount">6</span></div>
+              <div class="panel-sub">Ranked by risk-adjusted conviction across 14 liquid names</div>
+            </div>
+            <button class="link-btn" data-action="switch-view" data-view="signals">All signals <span aria-hidden="true">→</span></button>
+          </div>
+          <div class="ideas-grid" id="ideasGrid"></div>
+        </section>
+
+        <section class="panel heatmap-panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Sector pulse</div>
+              <div class="panel-sub">Today's rotation · % change</div>
+            </div>
+            <span class="chip chip-neutral">11 sectors</span>
+          </div>
+          <div class="heatmap" id="sectorHeatmap"></div>
+          <div class="heat-legend"><span class="legend-swatch neg"></span>Weak <span class="legend-swatch pos"></span>Strong</div>
+        </section>
+
+        <section class="panel feed-panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Live intelligence <span class="live-chip"><span class="live-dot"></span>12 feeds</span></div>
+              <div class="panel-sub">Ranked by market impact and recency</div>
+            </div>
+            <button class="link-btn" data-action="switch-view" data-view="news">News desk <span aria-hidden="true">→</span></button>
+          </div>
+          <div class="feed-list" id="feedList"></div>
+        </section>
+
+        <section class="panel watchlist-panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Watchlist</div>
+              <div class="panel-sub">Your tracked opportunities</div>
+            </div>
+            <button class="icon-btn small" data-action="switch-view" data-view="signals" aria-label="Open all signals">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <div class="watch-table" id="watchTable"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" id="view-signals" aria-label="AI signals">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> Model output · Pulse-4 Ensemble</div>
+          <h1>AI signals<span class="head-accent">.</span></h1>
+          <p>Every idea is scored on trend, momentum, volume, volatility and live news sentiment — then converted into a complete trade plan.</p>
+        </div>
+        <div class="head-meta">
+          <div class="head-meta-item"><span class="meta-label">Coverage</span><strong>14 tickers</strong></div>
+          <div class="head-meta-divider"></div>
+          <div class="head-meta-item"><span class="meta-label">Avg confidence</span><strong id="signalsAvgConf">—</strong></div>
+        </div>
+      </div>
+
+      <div class="signal-stats" id="signalStats"></div>
+
+      <div class="filter-bar">
+        <div class="filter-chips" id="signalFilters">
+          <button class="chip active" data-action="filter-signals" data-filter="all">All</button>
+          <button class="chip" data-action="filter-signals" data-filter="buy">Buy</button>
+          <button class="chip" data-action="filter-signals" data-filter="sell">Sell</button>
+          <button class="chip" data-action="filter-signals" data-filter="hold">Hold</button>
+        </div>
+        <div class="filter-right">
+          <label class="select-wrap">
+            <span class="sr-only">Sort signals</span>
+            <select id="signalSort">
+              <option value="confidence">Highest conviction</option>
+              <option value="score">Strongest score</option>
+              <option value="change">Biggest move</option>
+              <option value="risk">Lowest risk</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="signals-grid" id="signalsGrid"></div>
+    </section>
+
+    <section class="view" id="view-news" aria-label="News desk">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> Cross-source intelligence · NLP sentiment</div>
+          <h1>News desk<span class="head-accent">.</span></h1>
+          <p>Headlines from the world's most important finance newsrooms, parsed for entities, sentiment and likely market impact.</p>
+        </div>
+        <div class="head-meta">
+          <div class="head-meta-item"><span class="meta-label">Sources online</span><strong id="sourcesOnline">12 / 12</strong></div>
+          <div class="head-meta-divider"></div>
+          <div class="head-meta-item"><span class="meta-label">Headlines scanned</span><strong id="headlinesScanned">30</strong></div>
+        </div>
+      </div>
+
+      <div class="news-stats" id="newsStats"></div>
+
+      <div class="source-strip" id="sourceStrip"></div>
+
+      <div class="news-layout">
+        <section class="panel news-feed-panel">
+          <div class="panel-head news-feed-head">
+            <div>
+              <div class="panel-title">Intelligence feed</div>
+              <div class="panel-sub" id="newsFeedSub">All sources · ranked by impact</div>
+            </div>
+            <div class="news-controls">
+              <div class="mini-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.2 4.2" stroke-linecap="round"/></svg>
+                <input id="newsSearch" type="text" placeholder="Filter headlines…" aria-label="Filter headlines" />
+              </div>
+              <label class="select-wrap">
+                <span class="sr-only">Filter by source</span>
+                <select id="newsSourceFilter">
+                  <option value="all">All sources</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="filter-chips news-chips" id="newsFilters">
+            <button class="chip active" data-action="filter-news" data-filter="all">All</button>
+            <button class="chip" data-action="filter-news" data-filter="bullish"><span class="sent-dot pos"></span>Bullish</button>
+            <button class="chip" data-action="filter-news" data-filter="bearish"><span class="sent-dot neg"></span>Bearish</button>
+            <button class="chip" data-action="filter-news" data-filter="neutral"><span class="sent-dot mid"></span>Neutral</button>
+          </div>
+          <div class="news-list" id="newsList"></div>
+        </section>
+
+        <aside class="news-rail">
+          <section class="panel rail-panel">
+            <div class="panel-head compact">
+              <div class="panel-title">Trending tickers</div>
+              <span class="chip chip-neutral">24h</span>
+            </div>
+            <div class="trending-list" id="trendingList"></div>
+          </section>
+          <section class="panel rail-panel">
+            <div class="panel-head compact">
+              <div class="panel-title">Source reliability</div>
+              <span class="chip chip-mint">Verified</span>
+            </div>
+            <div class="reliability-list" id="reliabilityList"></div>
+            <p class="rail-note">Credibility weights feed directly into the sentiment model. Higher-trust, higher-impact stories move a signal further.</p>
+          </section>
+          <section class="panel rail-panel model-panel">
+            <div class="model-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l1.8 4.4L18 9l-4.2 1.6L12 15l-1.8-4.4L6 9l4.2-1.6L12 3Z" stroke-linejoin="round"/><path d="M18.5 15.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9.9-2.1Z" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="model-copy">
+              <div class="panel-title">How the AI reads news</div>
+              <p>Each headline is scored for sentiment, novelty, source trust and entity relevance. Conflicting stories are discounted, not averaged blindly.</p>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" id="view-portfolio" aria-label="Paper portfolio">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> Paper trading · $100,000 starting capital</div>
+          <h1>Portfolio<span class="head-accent">.</span></h1>
+          <p>Execute the AI's ideas in a risk-free simulator. Positions, P&amp;L and allocation update instantly.</p>
+        </div>
+        <div class="head-meta">
+          <div class="head-meta-item"><span class="meta-label">Account</span><strong>Paper · USD</strong></div>
+          <button class="btn btn-ghost btn-sm" data-action="reset-portfolio">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="portfolio-stats" id="portfolioStats"></div>
+
+      <div class="portfolio-grid">
+        <section class="panel equity-panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Equity curve</div>
+              <div class="panel-sub">30 trading days · mark-to-market</div>
+            </div>
+            <span class="chip chip-mint" id="equityReturnChip">+0.00%</span>
+          </div>
+          <div class="equity-chart" id="equityChart"></div>
+        </section>
+
+        <section class="panel alloc-panel">
+          <div class="panel-head compact">
+            <div class="panel-title">Allocation</div>
+            <span class="chip chip-neutral">Live</span>
+          </div>
+          <div class="alloc-body" id="allocBody"></div>
+        </section>
+
+        <section class="panel holdings-panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Open positions <span class="count-pill" id="positionCount">0</span></div>
+              <div class="panel-sub">Long and short paper positions</div>
+            </div>
+            <button class="link-btn" data-action="switch-view" data-view="signals">Find a trade <span aria-hidden="true">→</span></button>
+          </div>
+          <div class="holdings-table" id="holdingsTable"></div>
+        </section>
+
+        <section class="panel history-panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Trade history</div>
+              <div class="panel-sub">Most recent executions</div>
+            </div>
+          </div>
+          <div class="history-table" id="historyTable"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="brand-mark small" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M7 24h6l3.5-9 5 16 4-10.5H34" stroke="#34e5ad" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <div><strong>PulseTrade AI</strong><span>Research, not financial advice.</span></div>
+      </div>
+      <div class="footer-links">
+        <button data-action="switch-view" data-view="dashboard">Dashboard</button>
+        <button data-action="switch-view" data-view="signals">AI signals</button>
+        <button data-action="switch-view" data-view="news">News desk</button>
+        <button data-action="switch-view" data-view="portfolio">Portfolio</button>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      <p><strong>Important:</strong> PulseTrade AI is an educational market-research simulator. Quotes, headlines and signals in this demo are synthetically generated for illustration and are not live market data. Nothing here is investment advice or a recommendation to buy or sell any security. Markets involve risk, including loss of principal. Always do your own research.</p>
+      <div class="footer-meta"><span>© 2026 PulseTrade Labs</span><span>Pulse-4 Ensemble · v4.2.1</span><span>Simulated data</span></div>
+    </div>
+  </footer>
+
+  <nav class="mobile-nav" aria-label="Mobile primary">
+    <button class="mobile-nav-item active" data-action="switch-view" data-view="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-8Z" stroke-linejoin="round"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="mobile-nav-item" data-action="switch-view" data-view="signals">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-6 4 3 4-7 5 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 21h18" stroke-linecap="round"/></svg>
+      <span>Signals</span>
+    </button>
+    <button class="mobile-nav-item mobile-scan" data-action="run-scan" aria-label="Run AI scan">
+      <span class="mobile-scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+      </span>
+    </button>
+    <button class="mobile-nav-item" data-action="switch-view" data-view="news">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h13v14H6a2 2 0 0 1-2-2V5Z" stroke-linejoin="round"/><path d="M17 8h3v9a2 2 0 0 1-2 2h-1M7 9h7M7 12h7M7 15h4" stroke-linecap="round"/></svg>
+      <span>News</span>
+    </button>
+    <button class="mobile-nav-item" data-action="switch-view" data-view="portfolio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18" stroke-linecap="round"/></svg>
+      <span>Portfolio</span>
+    </button>
+  </nav>
+
+  <div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-label="AI research report"></div>
+  <div class="modal-backdrop" id="ticketModal" role="dialog" aria-modal="true" aria-label="Paper trade ticket"></div>
+  <div class="modal-backdrop" id="articleModal" role="dialog" aria-modal="true" aria-label="News article"></div>
+  <div class="modal-backdrop" id="confirmModal" role="dialog" aria-modal="true" aria-label="Confirm action"></div>
+  <div class="modal-backdrop scan-backdrop" id="scanOverlay" role="dialog" aria-modal="true" aria-label="AI scan in progress"></div>
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
